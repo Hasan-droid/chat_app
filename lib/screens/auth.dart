@@ -12,6 +12,19 @@ class authScreen extends StatefulWidget {
 
 class _authScreen extends State<authScreen> {
   var _isLogin = true;
+  final _formkey = GlobalKey<FormState>();
+  var _emailEntered = "";
+  var _passwordEntered = "";
+
+  void submit() {
+    final validValue = _formkey.currentState!.validate();
+
+    if (validValue) {
+      _formkey.currentState!.save();
+      print('_enteredPassword $_emailEntered');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -30,33 +43,57 @@ class _authScreen extends State<authScreen> {
             Card(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Email"),
-                      keyboardType: TextInputType.emailAddress,
-                      autocorrect: false,
-                      textCapitalization: TextCapitalization.none,
-                    ),
-                    TextFormField(decoration: InputDecoration(labelText: "Password"), obscureText: true),
-                    SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(_isLogin ? "LogIn" : "SignUp"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: Form(
+                  key: _formkey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(labelText: "Email"),
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        textCapitalization: TextCapitalization.none,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty || !value.contains("@")) {
+                            return "Please Enter Valid Email";
+                          }
+                          return null;
+                        },
+                        onSaved: (newValue) {
+                          _emailEntered = newValue!;
+                        },
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                        });
-                      },
-                      child: Text(_isLogin ? "Create Account" : "Already have account"),
-                    ),
-                  ],
+                      TextFormField(
+                        decoration: InputDecoration(labelText: "Password"),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.length < 6) {
+                            return "Password must be at least 6 characters";
+                          }
+                          return null;
+                        },
+                        onSaved: (newValue) {
+                          _passwordEntered = newValue!;
+                        },
+                      ),
+                      SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: submit,
+                        child: Text(_isLogin ? "LogIn" : "SignUp"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLogin = !_isLogin;
+                          });
+                        },
+                        child: Text(_isLogin ? "Create Account" : "Already have account"),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
