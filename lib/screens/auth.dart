@@ -19,6 +19,7 @@ class _authScreen extends State<authScreen> {
   var _passwordEntered = "";
 
   void submit() async {
+    FocusScope.of(context).unfocus();
     final validValue = _formkey.currentState!.validate();
 
     if (!validValue) {
@@ -26,22 +27,25 @@ class _authScreen extends State<authScreen> {
     }
 
     _formkey.currentState!.save();
-
-    if (_isLogin) {
-      // ...
-    } else {
-      try {
-        final userCrendintals = await authInstance.createUserWithEmailAndPassword(
+    try {
+      if (_isLogin) {
+        final userCredentials = await authInstance.signInWithEmailAndPassword(
           email: _emailEntered,
           password: _passwordEntered,
         );
-        print('user credentials $userCrendintals');
-      } on FirebaseAuthException catch (err) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(err.message ?? "authentication error")));
+        print('user credentials $userCredentials');
+      } else {
+        final userCredentials = await authInstance.createUserWithEmailAndPassword(
+          email: _emailEntered,
+          password: _passwordEntered,
+        );
+        print('user credentials $userCredentials');
       }
+    } on FirebaseAuthException catch (err) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(err.message ?? "authentication error")));
     }
   }
 
