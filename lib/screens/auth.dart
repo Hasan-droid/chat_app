@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -33,19 +34,28 @@ class _authScreen extends State<authScreen> {
           email: _emailEntered,
           password: _passwordEntered,
         );
-        print('user credentials $userCredentials');
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredentials.user!.uid)
+            .set({
+              "username": "to to done ...",
+              "email": _emailEntered,
+              "image url": "to be done ...",
+            });
       } else {
-        final userCredentials = await authInstance.createUserWithEmailAndPassword(
-          email: _emailEntered,
-          password: _passwordEntered,
-        );
+        final userCredentials = await authInstance
+            .createUserWithEmailAndPassword(
+              email: _emailEntered,
+              password: _passwordEntered,
+            );
         print('user credentials $userCredentials');
       }
     } on FirebaseAuthException catch (err) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(err.message ?? "authentication error")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(err.message ?? "authentication error")),
+      );
     }
   }
 
@@ -78,7 +88,9 @@ class _authScreen extends State<authScreen> {
                         autocorrect: false,
                         textCapitalization: TextCapitalization.none,
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty || !value.contains("@")) {
+                          if (value == null ||
+                              value.trim().isEmpty ||
+                              !value.contains("@")) {
                             return "Please Enter Valid Email";
                           }
                           return null;
@@ -105,7 +117,8 @@ class _authScreen extends State<authScreen> {
                         onPressed: submit,
                         child: Text(_isLogin ? "LogIn" : "SignUp"),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer,
                         ),
                       ),
                       TextButton(
@@ -114,7 +127,9 @@ class _authScreen extends State<authScreen> {
                             _isLogin = !_isLogin;
                           });
                         },
-                        child: Text(_isLogin ? "Create Account" : "Already have account"),
+                        child: Text(
+                          _isLogin ? "Create Account" : "Already have account",
+                        ),
                       ),
                     ],
                   ),
