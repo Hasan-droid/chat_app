@@ -32,7 +32,7 @@ class _authScreen extends State<authScreen> {
     _formkey.currentState!.save();
     try {
       if (_isLogin) {
-        final userCredentials = await authInstance.signInWithEmailAndPassword(
+        await authInstance.signInWithEmailAndPassword(
           email: _emailEntered,
           password: _passwordEntered,
         );
@@ -51,7 +51,6 @@ class _authScreen extends State<authScreen> {
               "email": _emailEntered,
               "image url": _imageUrl,
             });
-        print('user credentials $userCredentials');
       }
     } on FirebaseAuthException catch (err) {
       ScaffoldMessenger.of(context).clearSnackBars();
